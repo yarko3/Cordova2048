@@ -7,3 +7,5 @@ Currently implemented features:
 Future features:
 - functioning high score
 - AI traversal algorithms and their visualization (Bounded DFS, IDDFS, IDA*)
+
+This software is under the MIT license, as outlined in the //2048/LICENSE.txt file.
