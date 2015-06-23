@@ -125,9 +125,14 @@ GameManager.prototype.prepareTiles = function () {
 
 // Move a tile and its representation
 GameManager.prototype.moveTile = function (tile, cell) {
-  this.grid.cells[tile.x][tile.y] = null;
-  this.grid.cells[cell.x][cell.y] = tile;
-  tile.updatePosition(cell);
+    //clear previously occupied space
+    this.grid.cells[tile.x][tile.y] = null;
+    //update blank
+    this.grid.blank = { x: tile.x, y: tile.y };
+    //place tile in new locale
+    this.grid.cells[cell.x][cell.y] = tile;
+    //update tile coordinates
+    tile.updatePosition(cell);
 };
 
 // Move tiles on the grid in the specified direction
@@ -147,7 +152,7 @@ GameManager.prototype.move = function (direction) {
   this.prepareTiles();
     
   //the blank
-  var blank = self.grid.getBlank();
+  var blank = self.grid.findBlank();
 
     //the the (at most) 1 tile required to move
     //will be the opposite side of the vector
@@ -178,37 +183,12 @@ GameManager.prototype.move = function (direction) {
       }
 
   }
-
-  //// Traverse the grid in the right direction and move tiles
-  //traversals.x.forEach(function (x) {
-  //  traversals.y.forEach(function (y) {
-  //    cell = { x: x, y: y };
-  //    tile = self.grid.cellContent(cell);
-        
-  //      //does this cell have a tile?
-  //    if (tile) {
-  //        //how far can we move?
-  //        var positions = self.findFarthestPosition(cell, vector);
-  //        //what is in the next position?
-  //        var next = self.grid.cellContent(positions.next);
-
-  //        //move the tile to as far as it can go
-  //        self.moveTile(tile, positions.farthest);
-        
-  //      //have we moved?
-  //      if (!self.positionsEqual(cell, tile)) {
-  //          moved = true; // The tile moved from its original cell!
-  //          // Update the score (only want to update score once)
-  //          self.score += 1;
-  //      }
-  //    }
-  //  });
-    //});
-
-
     //if we moved, reactuate
   if (moved) {
-    this.actuate();
+      //check for goal state
+      this.won = this.grid.atGoalState();
+
+      this.actuate();
   }
 };
 

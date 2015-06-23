@@ -99,7 +99,8 @@ Grid.prototype.withinBounds = function (position) {
          position.y >= 0 && position.y < this.size;
 };
 
-Grid.prototype.getBlank = function () {
+//find the one blank
+Grid.prototype.findBlank = function () {
     var cell;
     for (var x = 0; x < this.size; x++) {
         for (var y = 0; y < this.size; y++)
@@ -107,6 +108,40 @@ Grid.prototype.getBlank = function () {
             cell = {x: x, y: y}; 
             if (this.cellAvailable(cell))
                 return cell;
+        }
+    }
+};
+
+//check if at goal state
+Grid.prototype.atGoalState = function () {
+    var cell;
+    var blank = this.findBlank();
+    
+    //check the location of blank first
+    if (blank.y * this.size + blank.x != this.size * this.size - 1)
+        return false;
+
+    for (var x = 0; x < this.size; x++) {
+        for (var y = 0; y < this.size; y++) {
+            if (y * this.size + x <= this.size * this.size - 2) {
+                cell = { x: x, y: y };
+                if (y * this.size + x != this.cells[x][y].value)
+                    return false;
+            }
+        }
+    }
+    return true;
+};
+//fill grid with solution
+Grid.prototype.filleWithSolution = function () {
+    for (var x = 0; x < this.size; x++) {
+        for (var y = 0; y < this.size; y++) {
+            if (y * this.size + x < this.size * this.size - 1)
+                this.cells[x][y] = new Tile({ x: x, y: y }, y * this.size + x);
+            else
+            {
+                this.cells[x][y] = null;
+            }
         }
     }
 };
@@ -124,6 +159,6 @@ Grid.prototype.serialize = function () {
 
   return {
     size: this.size,
-    cells: cellState
+    cells: cellState,
   };
 };
