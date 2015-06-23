@@ -99,6 +99,18 @@ Grid.prototype.withinBounds = function (position) {
          position.y >= 0 && position.y < this.size;
 };
 
+Grid.prototype.getBlank = function () {
+    var cell;
+    for (var x = 0; x < this.size; x++) {
+        for (var y = 0; y < this.size; y++)
+        {
+            cell = {x: x, y: y}; 
+            if (this.cellAvailable(cell))
+                return cell;
+        }
+    }
+};
+
 Grid.prototype.serialize = function () {
   var cellState = [];
 
