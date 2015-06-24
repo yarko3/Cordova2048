@@ -133,7 +133,7 @@ Grid.prototype.atGoalState = function () {
     return true;
 };
 //fill grid with solution
-Grid.prototype.filleWithSolution = function () {
+Grid.prototype.fillWithSolution = function () {
     for (var x = 0; x < this.size; x++) {
         for (var y = 0; y < this.size; y++) {
             if (y * this.size + x < this.size * this.size - 1)

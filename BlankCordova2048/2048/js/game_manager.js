@@ -10,6 +10,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("dfs", this.startDFS.bind(this));
 
   this.setup();
 }
@@ -187,6 +188,12 @@ GameManager.prototype.move = function (direction) {
   if (moved) {
       //check for goal state
       this.won = this.grid.atGoalState();
+      //for debug only
+      //console.log(this.won);
+      //console.log("Fill with solution.");
+      //this.grid.fillWithSolution();
+      //this.won = this.grid.atGoalState();
+      //console.log(this.won);
 
       this.actuate();
   }
@@ -245,4 +252,79 @@ GameManager.prototype.movesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+GameManager.prototype.startDFS = function () {
+    this.DFS(3);
+};
+
+//perform depth-bounded depth first search
+GameManager.prototype.DFS = function (depth) {
+    //check if we've found a solution, stop
+    if (this.grid.atGoalState()) {
+        this.won = true;
+        return;
+    }
+    //we aren't at a solution state, so see if we can make moves with given depth
+    if (depth <= 0)
+        return;
+
+    //get available moves
+    //first must get blank
+    var blank = this.grid.findBlank();
+    var newDepth = depth - 1;
+    
+    //can we move the blank up?
+    if (blank.y > 0)
+    {
+        //perform move
+        this.move(2);
+        this.DFS(newDepth);
+
+        //if we're not at a solution, undo move
+        if (this.won)
+            return;
+
+        this.move(0);
+    }
+
+    //can we move the blank down?
+    if (blank.y < this.size-1) {
+        //perform move
+        this.move(0);
+        this.DFS(newDepth);
+
+        //if we're not at a solution, undo move
+        if (this.won)
+            return;
+
+        this.move(2);
+    }
+
+    //can we move the blank left?
+    if (blank.x > 0) {
+        //perform move
+        this.move(3);
+        this.DFS(newDepth);
+
+        //if we're not at a solution, undo move
+        if (this.won)
+            return;
+
+        this.move(1);
+    }
+
+    //can we move the blank right?
+    if (blank.x < this.size-1) {
+        //perform move
+        this.move(1);
+        this.DFS(newDepth);
+
+        //if we're not at a solution, undo move
+        if (this.won)
+            return;
+
+        this.move(3);
+    }
+    
 };
