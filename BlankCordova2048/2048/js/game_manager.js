@@ -11,6 +11,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
   this.inputManager.on("dfs", this.startDFS.bind(this));
+  this.inputManager.on("solve", this.solve.bind(this));
 
   this.setup();
 }
@@ -136,6 +137,12 @@ GameManager.prototype.moveTile = function (tile, cell) {
     tile.updatePosition(cell);
 };
 
+//fill puzzle with solution state
+GameManager.prototype.solve = function () {
+    this.grid.fillWithSolution();
+    this.actuate();
+}
+
 // Move tiles on the grid in the specified direction
 GameManager.prototype.move = function (direction) {
   // 0: up, 1: right, 2: down, 3: left
@@ -146,7 +153,6 @@ GameManager.prototype.move = function (direction) {
   var cell, tile;
 
   var vector     = this.getVector(direction);
-  var traversals = this.buildTraversals(vector);
   var moved      = false;
 
   // Save the current tile positions and remove merger information
@@ -169,12 +175,8 @@ GameManager.prototype.move = function (direction) {
       cell = { x: cellToCheck.x, y: cellToCheck.y };
       tile = self.grid.cellContent(cell);
 
-      var positions = self.findFarthestPosition(cell, vector);
-      //what is in the next position?
-      var next = self.grid.cellContent(positions.next);
-
       //move the tile to as far as it can go
-      self.moveTile(tile, positions.farthest);
+      self.moveTile(tile, blank);
 
       //have we moved?
       if (!self.positionsEqual(cell, tile)) {
@@ -255,8 +257,9 @@ GameManager.prototype.positionsEqual = function (first, second) {
 };
 
 GameManager.prototype.startDFS = function () {
-    this.DFS(3);
+    this.DFS(5);
 };
+
 
 //perform depth-bounded depth first search
 GameManager.prototype.DFS = function (depth) {
@@ -274,7 +277,7 @@ GameManager.prototype.DFS = function (depth) {
     var blank = this.grid.findBlank();
     var newDepth = depth - 1;
     
-    //can we move the blank up?
+    //can we move tile down?
     if (blank.y > 0)
     {
         //perform move
@@ -301,30 +304,30 @@ GameManager.prototype.DFS = function (depth) {
         this.move(2);
     }
 
-    //can we move the blank left?
+    //can we move a tile right?
     if (blank.x > 0) {
         //perform move
-        this.move(3);
+        this.move(1);
         this.DFS(newDepth);
 
         //if we're not at a solution, undo move
         if (this.won)
             return;
 
-        this.move(1);
+        this.move(3);
     }
 
     //can we move the blank right?
     if (blank.x < this.size-1) {
         //perform move
-        this.move(1);
+        this.move(3);
         this.DFS(newDepth);
 
         //if we're not at a solution, undo move
         if (this.won)
             return;
 
-        this.move(3);
+        this.move(1);
     }
     
 };

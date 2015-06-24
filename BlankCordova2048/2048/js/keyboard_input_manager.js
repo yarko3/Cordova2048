@@ -73,6 +73,7 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
   this.bindButtonPress(".dfs-button", this.DFS);
+  this.bindButtonPress(".solve-button", this.solve);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -148,4 +149,8 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
 KeyboardInputManager.prototype.DFS = function (event) {
     event.preventDefault();
     this.emit("dfs");
+};
+KeyboardInputManager.prototype.solve = function (event) {
+    event.preventDefault();
+    this.emit("solve");
 };
