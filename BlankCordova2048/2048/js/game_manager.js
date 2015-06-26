@@ -2,7 +2,8 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.size           = size; // Size of the grid
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
-  this.actuator       = new Actuator;
+  this.actuator = new Actuator;
+  
 
   //start with all but 1 tile
   this.startTiles     = size*size-1;
@@ -10,7 +11,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
-  this.inputManager.on("dfs", this.startDFS.bind(this));
+  this.inputManager.on("dfs", this.startIDDFS.bind(this));
   this.inputManager.on("solve", this.solve.bind(this));
 
   this.setup();
@@ -46,12 +47,14 @@ GameManager.prototype.setup = function () {
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
+    this.traversing = false;
   } else {
     this.grid        = new Grid(this.size);
     this.score       = 0;
     this.over        = false;
     this.won         = false;
     this.keepPlaying = false;
+    this.traversing = false;
 
     // Add the initial tiles
     this.addStartTiles();
@@ -256,6 +259,29 @@ GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
 };
 
+//perform iterative-deepening depth first search until stop button pressed
+GameManager.prototype.startIDDFS = function () {
+
+    //check if we're currently not already traversing
+    if (!this.traversing)
+    {
+        //use this.traversing as a semaphore
+        this.traversing = true;
+        //the depth of depth-bounded DFS
+        var depth = 1;
+
+        //perform dfs until we've found a solution and we're still traversing
+        while (!this.won && this.traversing)
+        {
+            this.DFS(depth);
+
+            depth++;
+        }
+        //release semaphore
+        this.traversing = false;
+    }
+};
+
 GameManager.prototype.startDFS = function () {
     this.DFS(5);
 };
@@ -269,7 +295,8 @@ GameManager.prototype.DFS = function (depth) {
         return;
     }
     //we aren't at a solution state, so see if we can make moves with given depth
-    if (depth <= 0)
+    //or if we don't wanna traverse anymore
+    if (depth <= 0 || !this.traversing)
         return;
 
     //get available moves
