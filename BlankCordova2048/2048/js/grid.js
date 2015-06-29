@@ -106,10 +106,23 @@ Grid.prototype.findBlank = function () {
         for (var y = 0; y < this.size; y++)
         {
             cell = {x: x, y: y}; 
-            if (this.cellAvailable(cell))
+            if (this.cellAvailable(cell)) {
+                //update the locally stored blank location
+                this.blank = cell;
                 return cell;
+            }
         }
     }
+};
+
+
+//get the blank (don't wanna read entire table if we have it stored
+Grid.prototype.getBlank = function () {
+    //check if currently stored blank is good
+    if (this.blank  == undefined || !this.cellAvailable(this.blank))
+       this.findBlank();
+    
+    return this.blank;
 };
 
 //check if at goal state

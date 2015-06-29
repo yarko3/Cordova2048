@@ -162,7 +162,7 @@ GameManager.prototype.move = function (direction) {
   this.prepareTiles();
     
   //the blank
-  var blank = self.grid.findBlank();
+  var blank = self.grid.getBlank();
 
     //the the (at most) 1 tile required to move
     //will be the opposite side of the vector
@@ -301,7 +301,7 @@ GameManager.prototype.DFS = function (depth) {
 
     //get available moves
     //first must get blank
-    var blank = this.grid.findBlank();
+    var blank = this.grid.getBlank();
     var newDepth = depth - 1;
     
     //can we move tile down?
