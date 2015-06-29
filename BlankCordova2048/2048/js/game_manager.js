@@ -184,6 +184,9 @@ GameManager.prototype.move = function (direction) {
       //have we moved?
       if (!self.positionsEqual(cell, tile)) {
           moved = true; // The tile moved from its original cell!
+
+          //update blank
+          this.grid.blank = cell;
           // Update the score (only want to update score once)
           self.score += 1;
       }
