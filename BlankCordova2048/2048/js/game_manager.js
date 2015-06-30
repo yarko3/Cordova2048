@@ -274,20 +274,25 @@ GameManager.prototype.startIDDFS = function () {
         var depth = 1;
 
         //perform dfs until we've found a solution and we're still traversing
-        while (!this.won && this.traversing)
+        while (!this.won && this.traversing && depth < 5)
         {
             this.DFS(depth);
 
+            console.log("DFS got through depth: " + depth);
             depth++;
         }
+
+        //if we haven't solved yet, we hit the depth cap (prompt screen)
+        if (!this.won)
+        {
+
+        }
+
         //release semaphore
         this.traversing = false;
     }
 };
 
-GameManager.prototype.startDFS = function () {
-    this.DFS(5);
-};
 
 
 //perform depth-bounded depth first search
