@@ -297,6 +297,8 @@ GameManager.prototype.startIDDFS = function () {
 
         //release semaphore
         this.traversing = false;
+
+        this.traversed = false;
     }
 };
 

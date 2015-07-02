@@ -32,6 +32,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
       } 
     }
 
+    //if we traversed last
     if (metadata.traversed) {
         self.messageTraversalEnd(metadata.won);
     }
