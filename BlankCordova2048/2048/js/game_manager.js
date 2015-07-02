@@ -102,7 +102,8 @@ GameManager.prototype.actuate = function () {
     over:       this.over,
     won:        this.won,
     bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated()
+    terminated: this.isGameTerminated(),
+    traversed:  this.traversed
   });
 
 };
@@ -143,6 +144,7 @@ GameManager.prototype.moveTile = function (tile, cell) {
 //fill puzzle with solution state
 GameManager.prototype.solve = function () {
     this.grid.fillWithSolution();
+    this.won = true;
     this.actuate();
 }
 
@@ -196,12 +198,6 @@ GameManager.prototype.move = function (direction) {
   if (moved) {
       //check for goal state
       this.won = this.grid.atGoalState();
-      //for debug only
-      //console.log(this.won);
-      //console.log("Fill with solution.");
-      //this.grid.fillWithSolution();
-      //this.won = this.grid.atGoalState();
-      //console.log(this.won);
 
       this.actuate();
   }
@@ -266,8 +262,8 @@ GameManager.prototype.positionsEqual = function (first, second) {
 GameManager.prototype.startIDDFS = function () {
 
     //check IDDFS counter (this is due to the fact that this function is called twice every time it is pressed)
-    if (this.iddfsCounter == true) {
-        this.iddfsCounter = false;
+    if (this.traversed == true) {
+        this.traversed = false;
         return;
     }
     //check if we're currently not already traversing
@@ -294,7 +290,10 @@ GameManager.prototype.startIDDFS = function () {
         }
 
         //set counter 
-        this.iddfsCounter = true;
+        this.traversed = true;
+
+        //actuate for message on screen
+        this.actuate();
 
         //release semaphore
         this.traversing = false;

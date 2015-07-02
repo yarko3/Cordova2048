@@ -12,6 +12,11 @@ Tile.prototype.savePosition = function () {
 };
 
 Tile.prototype.updatePosition = function (position) {
+
+    //store old position
+    this.previousPosition.x = this.x;
+    this.previousPosition.y = this.y;
+
   this.x = position.x;
   this.y = position.y;
 };

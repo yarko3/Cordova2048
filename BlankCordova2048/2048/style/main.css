@@ -566,14 +566,14 @@ hr {
     margin-top: 2px; }
 
   .solve-button {
-    width: 49%;
+    width: 49.5%;
     padding: 0;
     display: block;
     box-sizing: border-box;
     margin-top: 2px; }
 
     .dfs-button {
-    width: 49%;
+    width: 49.5%;
     padding: 0;
     display: block;
     box-sizing: border-box;

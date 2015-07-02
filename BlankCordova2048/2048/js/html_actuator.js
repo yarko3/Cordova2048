@@ -29,7 +29,11 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
         self.message(false); // You lose
       } else if (metadata.won) {
         self.message(true); // You win!
-      }
+      } 
+    }
+
+    if (metadata.traversed) {
+        self.messageTraversalEnd(metadata.won);
     }
 
   });
@@ -130,6 +134,15 @@ HTMLActuator.prototype.message = function (won) {
 
   this.messageContainer.classList.add(type);
   this.messageContainer.getElementsByTagName("p")[0].textContent = message;
+};
+
+
+HTMLActuator.prototype.messageTraversalEnd = function (won) {
+    var type = "game-won";
+    var message = won ? "Traversal found a solution!" : "Traversal could not find a solution.";
+
+    this.messageContainer.classList.add(type);
+    this.messageContainer.getElementsByTagName("p")[0].textContent = message;
 };
 
 HTMLActuator.prototype.clearMessage = function () {
