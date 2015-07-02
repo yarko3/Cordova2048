@@ -265,6 +265,11 @@ GameManager.prototype.positionsEqual = function (first, second) {
 //perform iterative-deepening depth first search until stop button pressed
 GameManager.prototype.startIDDFS = function () {
 
+    //check IDDFS counter (this is due to the fact that this function is called twice every time it is pressed)
+    if (this.iddfsCounter == true) {
+        this.iddfsCounter = false;
+        return;
+    }
     //check if we're currently not already traversing
     if (!this.traversing)
     {
@@ -287,6 +292,9 @@ GameManager.prototype.startIDDFS = function () {
         {
 
         }
+
+        //set counter 
+        this.iddfsCounter = true;
 
         //release semaphore
         this.traversing = false;
