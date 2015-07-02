@@ -283,13 +283,7 @@ GameManager.prototype.startIDDFS = function () {
             depth++;
         }
 
-        //if we haven't solved yet, we hit the depth cap (prompt screen)
-        if (!this.won)
-        {
-
-        }
-
-        //set counter 
+        //set flag for outputting to screen 
         this.traversed = true;
 
         //actuate for message on screen
@@ -298,6 +292,7 @@ GameManager.prototype.startIDDFS = function () {
         //release semaphore
         this.traversing = false;
 
+        //remove flag for message (otherwise it will sometimes show up again)
         this.traversed = false;
     }
 };
@@ -374,4 +369,33 @@ GameManager.prototype.DFS = function (depth) {
         this.move(1);
     }
     
+};
+
+//This heuristic evaluation in the Manhattan distance
+GameManager.prototype.manhattanHeuristic = function () {
+    //our score to return
+    var rtn = 0;
+
+    //for every space on the board, measure the steps to its goal position
+    for (var i = 0; i < this.size; i++) {
+        for (var j = 0; j < this.size; j++) {
+            //whatever is at this location
+            var cell = this.grid.cells[i][j];
+
+            //check if this location is a tile or a blank
+            if (this.grid.cellOccupied(cell)) {
+                //get the value of the cell
+                var cellValue = cell.value;
+
+                var goalX = cellValue % this.size;
+                var goalY = cellValue / this.size;
+
+                //add to overall distance
+                rtn += Math.abs(goalX - j) + Math.abs(goalY - i);
+            }
+        }
+    }
+
+    return rtn;
+
 };
