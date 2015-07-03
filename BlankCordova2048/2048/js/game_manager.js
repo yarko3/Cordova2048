@@ -13,6 +13,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
   this.inputManager.on("dfs", this.startIDDFS.bind(this));
   this.inputManager.on("solve", this.solve.bind(this));
+  this.inputManager.on("idaStar", this.idaStar.bind(this));
 
   this.setup();
 }
@@ -261,8 +262,8 @@ GameManager.prototype.positionsEqual = function (first, second) {
 //perform iterative-deepening depth first search until stop button pressed
 GameManager.prototype.startIDDFS = function () {
 
-    //check IDDFS counter (this is due to the fact that this function is called twice every time it is pressed)
-    if (this.traversed == true) {
+    //check traversed flag (this is due to the fact that this function is called twice every time it is pressed)
+    if (this.traversed) {
         this.traversed = false;
         return;
     }
@@ -292,8 +293,6 @@ GameManager.prototype.startIDDFS = function () {
         //release semaphore
         this.traversing = false;
 
-        //remove flag for message (otherwise it will sometimes show up again)
-        this.traversed = false;
     }
 };
 
@@ -383,19 +382,174 @@ GameManager.prototype.manhattanHeuristic = function () {
             var cell = this.grid.cells[i][j];
 
             //check if this location is a tile or a blank
-            if (this.grid.cellOccupied(cell)) {
+            if (cell != null /*&& this.grid.cellOccupied(cell)*/) {
                 //get the value of the cell
                 var cellValue = cell.value;
 
                 var goalX = cellValue % this.size;
-                var goalY = cellValue / this.size;
+                var goalY = Math.floor(cellValue / this.size);
 
                 //add to overall distance
-                rtn += Math.abs(goalX - j) + Math.abs(goalY - i);
+                rtn += Math.abs(goalY - j) + Math.abs(goalX - i);
             }
         }
     }
 
     return rtn;
+};
+
+//run IDA* starting at the current board state (based on the wikipedia pseudocode)
+GameManager.prototype.idaStar = function ()
+{
+    //check traversed flag (this is due to the fact that this function is called twice every time it is pressed)
+    if (this.traversed == true) {
+        this.traversed = false;
+        return;
+    }
+    //check if we're currently not already traversing
+    if (this.traversing == undefined || !this.traversing)
+    {
+        //use this.traversing as a semaphore
+        this.traversing = true;
+
+        try 
+        {
+            //----------------------------------------------------------------
+            //use the Manhattan distance first
+            //bound := h(root)
+            var bound = this.manhattanHeuristic();
+
+            //loop
+            while (true) {
+                //t := search(roo, 0, bound)
+                var t = this.searchIdaStar(0, bound);
+                //if t = FOUND then return FOUND
+                //if t = infinity then return NOT_FOUND
+                if (t == "FOUND" || t == Number.MAX_VALUE) {
+                    break;
+                }
+                //bound := t
+                bound = t;
+            }
+            //----------------------------------------------------------------
+        }
+        //in case we get a max callstack error
+        catch (err) {
+            this.traversing = false;
+        }
+        //set flag for outputting to screen 
+        this.traversed = true;
+
+        //actuate for message on screen
+        this.actuate();
+
+        //release semaphore
+        this.traversing = false;
+
+    }
+        
+};
+
+//the search portion of IDA* (based on the wikipedia pseudocode)
+GameManager.prototype.searchIdaStar = function (g, bound)
+{
+    //f := g + h(node)
+    var f = g + this.manhattanHeuristic();
+
+    //if f > bound then return f
+    if (f > bound)
+        return f;
+
+    //if is_goal(node) then return FOUND
+    if (this.won)
+        return "FOUND";
+
+    //min := infinity
+    var min = Number.MAX_VALUE;
+
+    //for succ in successors(node) do
+    //(where I slightly devidate from the pseudocode
+
+    //get available moves
+    //first must get blank
+    var blank = this.grid.getBlank();
+    var t;
+
+    //can we move tile down?
+    if (blank.y > 0) {
+        //perform move
+        this.move(2);
+        
+        //t := search(succ, g + cost(node, succ), bound)
+        t = this.searchIdaStar(g + 1, bound);
+
+        //if t = FOUND then return FOUND
+        if (t == "FOUND")
+            return t;
+
+        //if t < min then min := t
+        if (t < min)
+            min = t;
+        //undo move
+        this.move(0);
+    }
+
+    //can we move the blank down?
+    if (blank.y < this.size - 1) {
+        //perform move
+        this.move(0);
+        
+        //t := search(succ, g + cost(node, succ), bound)
+        t = this.searchIdaStar(g + 1, bound);
+
+        //if t = FOUND then return FOUND
+        if (t == "FOUND")
+            return t;
+
+        //if t < min then min := t
+        if (t < min)
+            min = t;
+
+        this.move(2);
+    }
+
+    //can we move a tile right?
+    if (blank.x > 0) {
+        //perform move
+        this.move(1);
+       
+        //t := search(succ, g + cost(node, succ), bound)
+        t = this.searchIdaStar(g + 1, bound);
+
+        //if t = FOUND then return FOUND
+        if (t == "FOUND")
+            return t;
+
+        //if t < min then min := t
+        if (t < min)
+            min = t;
+
+        this.move(3);
+    }
+
+    //can we move the blank right?
+    if (blank.x < this.size - 1) {
+        //perform move
+        this.move(3);
+        
+        //t := search(succ, g + cost(node, succ), bound)
+        t = this.searchIdaStar(g + 1, bound);
+
+        //if t = FOUND then return FOUND
+        if (t == "FOUND")
+            return t;
+
+        //if t < min then min := t
+        if (t < min)
+            min = t;
+
+        this.move(1);
+    }
+
 
 };

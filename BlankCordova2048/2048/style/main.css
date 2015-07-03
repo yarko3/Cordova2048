@@ -512,6 +512,19 @@ hr {
   text-align: center;
   float: right; }
 
+.idaStar-button {
+  display: inline-block;
+  background: #8f7a66;
+  border-radius: 3px;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #f9f6f2;
+  height: 40px;
+  line-height: 42px;
+  display: block;
+  text-align: center;
+  float: right; }
+
 .dfs-button {
   display: inline-block;
   background: #8f7a66;
@@ -566,13 +579,20 @@ hr {
     margin-top: 2px; }
 
   .solve-button {
-    width: 49.5%;
+    width: 100;
     padding: 0;
     display: block;
     box-sizing: border-box;
     margin-top: 2px; }
 
     .dfs-button {
+    width: 49.5%;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    margin-top: 2px; }
+ 
+    .idaStar-button {
     width: 49.5%;
     padding: 0;
     display: block;

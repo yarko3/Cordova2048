@@ -74,6 +74,7 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
   this.bindButtonPress(".dfs-button", this.DFS);
   this.bindButtonPress(".solve-button", this.solve);
+  this.bindButtonPress(".idaStar-button", this.idaStar);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -153,4 +154,9 @@ KeyboardInputManager.prototype.DFS = function (event) {
 KeyboardInputManager.prototype.solve = function (event) {
     event.preventDefault();
     this.emit("solve");
+};
+
+KeyboardInputManager.prototype.idaStar = function (event) {
+    event.preventDefault();
+    this.emit("idaStar");
 };
