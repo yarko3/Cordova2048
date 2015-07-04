@@ -289,6 +289,8 @@ GameManager.prototype.startIDDFS = function () {
 
         //actuate for message on screen
         this.actuate();
+        
+        this.traversed = false;
 
         //release semaphore
         this.traversing = false;
@@ -437,11 +439,14 @@ GameManager.prototype.idaStar = function ()
         catch (err) {
             this.traversing = false;
         }
+        
         //set flag for outputting to screen 
         this.traversed = true;
 
         //actuate for message on screen
         this.actuate();
+
+        this.traversed = false;
 
         //release semaphore
         this.traversing = false;
